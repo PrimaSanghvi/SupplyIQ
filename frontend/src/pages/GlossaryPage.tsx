@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Info } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { fetchGlossary } from '../api/network';
 import type { GlossaryEntry } from '../types/optimization';
 

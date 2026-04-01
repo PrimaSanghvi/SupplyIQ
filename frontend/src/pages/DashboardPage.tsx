@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Activity, DollarSign, Leaf, ShieldAlert, Package, Truck, TrendingUp, TrendingDown,
-  AlertTriangle, Warehouse, CircleDollarSign, Boxes, BarChart3, CloudSnow, Ship, CheckCircle2
+  AlertTriangle, Warehouse, CircleDollarSign, Boxes, BarChart3, CloudSnow, Ship
 } from 'lucide-react';
 import { fetchNetwork } from '../api/network';
 import { runOptimization } from '../api/optimize';
@@ -42,8 +42,6 @@ export default function DashboardPage() {
   const [lanes, setLanes] = useState<Lane[]>([]);
   const [result, setResult] = useState<OptimizationResult | null>(null);
   const [naiveResult, setNaiveResult] = useState<OptimizationResult | null>(null);
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetchNetwork().then((data) => {
       setDcs(data.dcs);
@@ -54,11 +52,7 @@ export default function DashboardPage() {
   }, []);
 
   const optimize = useCallback((w: Weights) => {
-    setLoading(true);
-    runOptimization(w).then((r) => {
-      setResult(r);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    runOptimization(w).then(setResult).catch(() => {});
   }, []);
 
   // Debounced optimize on weight change
