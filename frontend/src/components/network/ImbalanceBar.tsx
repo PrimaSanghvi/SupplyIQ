@@ -21,7 +21,7 @@ export default function ImbalanceBar({ dcs }: Props) {
           <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
           <Tooltip
             contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0' }}
-            formatter={(value: number | string) => [`${Number(value).toLocaleString()} units`, 'Surplus/Shortage']}
+            formatter={(value) => [`${Number(value).toLocaleString()} units`, 'Surplus/Shortage']}
           />
           <ReferenceLine y={0} stroke="#475569" />
           <Bar dataKey="surplus" radius={[4, 4, 0, 0]}>

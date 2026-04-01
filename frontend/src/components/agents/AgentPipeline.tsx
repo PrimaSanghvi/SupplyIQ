@@ -117,11 +117,16 @@ export default function AgentPipeline({ currentStep, agentOutputs, agentErrors }
           </div>
 
           {/* Insight */}
-          {(agentOutputs[expanded] as Record<string, unknown>)?.insight && (
-            <div className="text-xs text-slate-300 bg-slate-800/50 rounded-lg p-2.5 mb-2 leading-relaxed">
-              {String((agentOutputs[expanded] as Record<string, unknown>).insight)}
-            </div>
-          )}
+          {(() => {
+            const output = agentOutputs[expanded] as Record<string, unknown> | undefined;
+            const insight = output?.insight;
+            if (!insight) return null;
+            return (
+              <div className="text-xs text-slate-300 bg-slate-800/50 rounded-lg p-2.5 mb-2 leading-relaxed">
+                {String(insight)}
+              </div>
+            );
+          })()}
 
           {/* Structured output */}
           <AgentDetailCard agentId={expanded} output={agentOutputs[expanded]} />
