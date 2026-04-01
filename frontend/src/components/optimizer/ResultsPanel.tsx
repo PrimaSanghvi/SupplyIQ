@@ -64,7 +64,7 @@ export default function ResultsPanel({ result }: Props) {
                   </Pie>
                   <Tooltip
                     contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8, color: '#e2e8f0', fontSize: 12 }}
-                    formatter={(v: number) => `$${v.toLocaleString()}`}
+                    formatter={(v: number | string) => `$${Number(v).toLocaleString()}`}
                   />
                 </PieChart>
               </ResponsiveContainer>

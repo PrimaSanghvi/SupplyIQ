@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, AlertTriangle, Search, Play, BarChart3, ChevronDown, ChevronUp, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { Eye, AlertTriangle, Search, Play, BarChart3, ChevronUp, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import AgentDetailCard from './AgentDetailCard';
 
 const AGENTS = [
@@ -117,7 +117,7 @@ export default function AgentPipeline({ currentStep, agentOutputs, agentErrors }
           </div>
 
           {/* Insight */}
-          {(agentOutputs[expanded] as Record<string, unknown>).insight && (
+          {(agentOutputs[expanded] as Record<string, unknown>)?.insight && (
             <div className="text-xs text-slate-300 bg-slate-800/50 rounded-lg p-2.5 mb-2 leading-relaxed">
               {String((agentOutputs[expanded] as Record<string, unknown>).insight)}
             </div>
