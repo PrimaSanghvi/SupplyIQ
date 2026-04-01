@@ -21,9 +21,8 @@ export default function Sidebar({ activePage, onNavigate }: SidebarProps) {
   return (
     <div className="w-56 bg-slate-900 border-r border-slate-700 flex flex-col p-4">
       <div className="mb-8">
-        <h1 className="text-lg font-bold text-white leading-tight">Inventory</h1>
-        <h1 className="text-lg font-bold text-cyan-400 leading-tight">Redeployment</h1>
-        <p className="text-xs text-slate-400 mt-1">Optimization & Explainability</p>
+        <h1 className="text-lg font-bold text-white leading-tight">SupplyMind AI</h1>
+        <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider">Optimization Engine</p>
       </div>
       <nav className="flex flex-col gap-1">
         {NAV_ITEMS.map(({ id, label, Icon }) => (
