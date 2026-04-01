@@ -259,7 +259,8 @@ export default function RiskInsightsPage() {
         setLanes(data.lanes);
       });
     } else {
-      fetch(`/api/scenarios/${scenarioId}`).then((r) => r.json()).then((data) => {
+      const apiBase = import.meta.env.VITE_API_URL || '';
+      fetch(`${apiBase}/api/scenarios/${scenarioId}`).then((r) => r.json()).then((data) => {
         if (data.dcs) setDcs(data.dcs);
         if (data.lanes) setLanes(data.lanes);
       });

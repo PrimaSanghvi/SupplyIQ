@@ -1,3 +1,4 @@
+import { API_BASE } from './config';
 import type { OptimizationResult, ComparisonResult, Weights, ParetoStrategyResult, MovementsResponse } from '../types/optimization';
 
 export async function runOptimization(
@@ -5,7 +6,7 @@ export async function runOptimization(
   scenarioId?: string,
   budgetCeiling: number = 100000,
 ): Promise<OptimizationResult> {
-  const res = await fetch('/api/optimize', {
+  const res = await fetch(`${API_BASE}/api/optimize`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -22,7 +23,7 @@ export async function runComparison(
   weights: Weights,
   budgetCeiling: number = 100000,
 ): Promise<ComparisonResult> {
-  const res = await fetch('/api/optimize/compare', {
+  const res = await fetch(`${API_BASE}/api/optimize/compare`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -38,7 +39,7 @@ export async function fetchPareto(
   scenarioId?: string,
   budgetCeiling: number = 100000,
 ): Promise<ParetoStrategyResult[]> {
-  const res = await fetch('/api/pareto', {
+  const res = await fetch(`${API_BASE}/api/pareto`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -54,7 +55,7 @@ export async function fetchMovements(
   weights: Weights = { cost: 0.5, carbon: 0.3, service_risk: 0.2 },
   budgetCeiling: number = 100000,
 ): Promise<MovementsResponse> {
-  const res = await fetch('/api/movements', {
+  const res = await fetch(`${API_BASE}/api/movements`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

@@ -1,3 +1,4 @@
+import { API_BASE } from './config';
 import type { ChatMessage } from '../types/chat';
 
 export async function sendChatMessage(
@@ -8,7 +9,7 @@ export async function sendChatMessage(
   summary: string = '',
   recentMessages: ChatMessage[] = [],
 ): Promise<string> {
-  const res = await fetch('/api/chat', {
+  const res = await fetch(`${API_BASE}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -53,7 +54,7 @@ export async function sendChatMessage(
 
 export async function summarizeChat(messages: ChatMessage[]): Promise<string> {
   try {
-    const res = await fetch('/api/chat/summarize', {
+    const res = await fetch(`${API_BASE}/api/chat/summarize`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages }),

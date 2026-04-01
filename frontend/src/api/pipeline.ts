@@ -1,3 +1,4 @@
+import { API_BASE } from './config';
 import type { AgentEvent } from '../types/agents';
 import type { Weights } from '../types/optimization';
 
@@ -7,7 +8,7 @@ export async function runPipeline(
   scenarioId?: string,
   budgetCeiling: number = 100000,
 ): Promise<void> {
-  const res = await fetch('/api/pipeline', {
+  const res = await fetch(`${API_BASE}/api/pipeline`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
