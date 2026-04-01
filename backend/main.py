@@ -305,6 +305,36 @@ async def pipeline(req: OptimizeRequest):
     return StreamingResponse(stream(), media_type="text/event-stream")
 
 
+GLOSSARY = [
+    {"term": "Objective Function (Z)", "category": "Core", "definition": "The weighted cost function the optimizer minimizes: Z = w₁·(Transport + Holding + Overflow) + w₂·(Carbon) + w₃·(Stockout Penalty). Lower Z means a better solution.", "formula": "Z = w₁·Cost + w₂·CO₂ + w₃·Risk"},
+    {"term": "Strategic Weights", "category": "Core", "definition": "Three user-adjustable weights (Cost, Carbon, Service Risk) that control the optimizer's priorities. They always sum to 1.0. Default: Cost=0.5, Carbon=0.3, Service Risk=0.2.", "formula": "w₁ + w₂ + w₃ = 1.0"},
+    {"term": "Shadow Price", "category": "Core", "definition": "The marginal cost of relaxing a constraint by one unit. A high shadow price on a capacity constraint means adding one more unit of capacity at that DC would significantly reduce total cost."},
+    {"term": "Transport Cost", "category": "Costs", "definition": "Cost of moving inventory between DCs. Ranges from $2.30/unit (DFW→ATL, 780 mi) to $6.90/unit (NYC→SEA, 2,850 mi). Calculated as transport_cost_per_unit × units shipped.", "formula": "∑(Tᵢⱼ · Xᵢⱼ)"},
+    {"term": "Holding Cost", "category": "Costs", "definition": "Cost of storing inventory at the destination DC after transfer. Ranges from $1.10/unit (Dallas) to $2.00/unit (New York). Applied to all units received.", "formula": "∑(Hⱼ · Xᵢⱼ)"},
+    {"term": "Stockout Penalty", "category": "Costs", "definition": "Penalty applied when demand cannot be met at a DC. Fixed at $100 per unit of unmet demand. This drives the optimizer to prioritize fulfillment at high-demand DCs.", "formula": "$100 × unmet_demand"},
+    {"term": "Overflow Penalty", "category": "Costs", "definition": "Penalty for exceeding a DC's nominal capacity. Fixed at $3 per unit above capacity. The optimizer allows up to 15% overflow before hitting the hard constraint.", "formula": "$3 × excess_units"},
+    {"term": "Overflow Allowance", "category": "Costs", "definition": "DCs can temporarily exceed nominal capacity by up to 15%. Stock above 100% incurs the overflow penalty ($3/unit), but stock above 115% is not allowed.", "formula": "max_stock ≤ capacity × 1.15"},
+    {"term": "Distribution Center (DC)", "category": "Network", "definition": "A warehouse node in the network. The system has 6 DCs: Atlanta (10K cap), Chicago (10K), Los Angeles (12K), Seattle (8K), Dallas (9K), New York (11K). Each has current stock, demand forecast, and holding cost."},
+    {"term": "Lane", "category": "Network", "definition": "A directional shipping route between two DCs. The network has 30 lanes with varying distances (720-2,850 mi), costs ($2.30-$6.90/unit), carbon emissions (12-46 kg/unit), transit times (2-5 days), and transport modes (truck/rail/intermodal)."},
+    {"term": "Safety Stock", "category": "Network", "definition": "Minimum inventory buffer at each DC to protect against demand variability. Ranges from 400 units (Seattle) to 800 units (Chicago). Net available supply = current_stock - safety_stock."},
+    {"term": "The Early Bird", "category": "Scenarios", "definition": "Counter-intuitive scenario: Ship 2,000 units from Atlanta to Chicago before demand exists because freight rates will spike 4x (from $2.50 to $10.00/unit) in 2 days due to a regional labor strike. Shipping early saves $13,200."},
+    {"term": "The Long Haul", "category": "Scenarios", "definition": "Counter-intuitive scenario: Ship from Dallas (2,150 mi) instead of nearby Los Angeles (1,140 mi) to Seattle because LAX stock is reserved for a Tier-1 customer. The extra $4,200 in freight avoids $50,000 in lost revenue."},
+    {"term": "The Overstock", "category": "Scenarios", "definition": "Counter-intuitive scenario: Push Chicago to 105% capacity ahead of a regional promotion (+4,000 demand). Overflow storage costs $7,500 but avoids $45,000 in lost sales during the promo."},
+    {"term": "Stockout Risk Levels", "category": "Risk", "definition": "DCs are scored by supply/demand ratio: CRITICAL (<0.5, 85-95% stockout probability), HIGH (0.5-0.8, 40-60%), MEDIUM (0.8-1.0, 15-40%), LOW (>1.0, 2-15%)."},
+    {"term": "Days of Supply", "category": "Risk", "definition": "How many days a DC's current inventory can sustain demand without resupply. Calculated as net_available / (demand_forecast / 30). Below 7 days is critical.", "formula": "net_available / daily_demand"},
+    {"term": "CO₂ Footprint", "category": "Sustainability", "definition": "Carbon emissions from transporting inventory. Ranges from 12 kg/unit (ATL↔CHI truck, 720 mi) to 46 kg/unit (NYC→SEA intermodal, 2,850 mi). Weighted by w₂ in the objective function.", "formula": "∑(Eᵢⱼ · Xᵢⱼ)"},
+    {"term": "Transport Mode", "category": "Sustainability", "definition": "Three modes available: Truck (<1,000 mi, fast but high CO₂), Rail (1,000-1,500 mi, low CO₂ but slower), Intermodal (>1,500 mi, balanced cost/carbon for long haul)."},
+    {"term": "Capacity Utilization", "category": "Metrics", "definition": "Percentage of a DC's capacity currently in use: (current_stock / capacity) × 100. Above 85% triggers anomaly flags in the Movement Ledger. Above 100% incurs overflow penalties.", "formula": "(stock / capacity) × 100%"},
+    {"term": "Pareto Frontier", "category": "Metrics", "definition": "A comparison table showing optimization results under 4 preset weight strategies: Cash King (80/10/10), Green Choice (10/80/10), Service First (10/10/80), Balanced (33/33/34). Demonstrates that no single solution dominates all objectives."},
+    {"term": "Anomaly Detection", "category": "Metrics", "definition": "Transfers flagged as anomalies in the Movement Ledger when: destination DC utilization exceeds 85%, cost/unit is >1.5× the average, or lane distance is >1.5× the shortest available route to that destination."},
+]
+
+
+@app.get("/api/glossary")
+def get_glossary():
+    return GLOSSARY
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

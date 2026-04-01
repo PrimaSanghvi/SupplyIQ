@@ -1,8 +1,9 @@
-import { Network, GitCompare, Sliders, ArrowRightLeft, Activity, ShieldAlert, MessageCircle, Zap } from 'lucide-react';
+import { LayoutDashboard, Network, GitCompare, Sliders, ArrowRightLeft, Activity, ShieldAlert, MessageCircle, BookOpen, Zap } from 'lucide-react';
 
-type Page = 'network' | 'scenarios' | 'optimizer' | 'movements' | 'simulation' | 'risk' | 'chat';
+type Page = 'dashboard' | 'network' | 'scenarios' | 'optimizer' | 'movements' | 'simulation' | 'risk' | 'chat' | 'glossary';
 
 const NAV_ITEMS: { id: Page; label: string; Icon: typeof Network }[] = [
+  { id: 'dashboard', label: 'Dashboard', Icon: LayoutDashboard },
   { id: 'network', label: 'Network', Icon: Network },
   { id: 'scenarios', label: 'Scenarios', Icon: GitCompare },
   { id: 'optimizer', label: 'Optimizer', Icon: Sliders },
@@ -10,6 +11,7 @@ const NAV_ITEMS: { id: Page; label: string; Icon: typeof Network }[] = [
   { id: 'simulation', label: 'Simulation', Icon: Activity },
   { id: 'risk', label: 'Risk Insights', Icon: ShieldAlert },
   { id: 'chat', label: 'Explainer', Icon: MessageCircle },
+  { id: 'glossary', label: 'Glossary', Icon: BookOpen },
 ];
 
 interface SidebarProps {

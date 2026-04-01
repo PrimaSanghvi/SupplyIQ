@@ -91,3 +91,10 @@ export interface MovementsResponse {
   movements: Movement[];
   summary: MovementsSummary;
 }
+
+export interface GlossaryEntry {
+  term: string;
+  category: string;
+  definition: string;
+  formula?: string;
+}
