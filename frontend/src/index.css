@@ -1,10 +1,39 @@
 @import "tailwindcss";
 
+/* ─── Theme: CSS variable overrides ─── */
+
+/* Light theme: remap Tailwind slate palette + text colors */
+.light {
+  /* Page backgrounds */
+  --color-slate-950: #f1f5f9;
+  --color-slate-900: #ffffff;
+  --color-slate-800: #f1f5f9;
+
+  /* Borders */
+  --color-slate-700: #e2e8f0;
+  --color-slate-600: #cbd5e1;
+
+  /* Text: muted */
+  --color-slate-500: #64748b;
+  --color-slate-400: #475569;
+  --color-slate-300: #334155;
+  --color-slate-200: #1e293b;
+
+  /* White text → dark in light mode */
+  --color-white: #0f172a;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: var(--color-slate-950, #0f172a);
+  color: var(--color-slate-200, #e2e8f0);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.light body {
+  background: #f1f5f9;
+  color: #1e293b;
 }
 
 #root {
@@ -18,7 +47,7 @@ input[type="range"] {
   -webkit-appearance: none;
   height: 6px;
   border-radius: 3px;
-  background: #1e293b;
+  background: var(--color-slate-800, #1e293b);
   outline: none;
 }
 
@@ -29,7 +58,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   background: #06b6d4;
   cursor: pointer;
-  border: 2px solid #0f172a;
+  border: 2px solid var(--color-slate-950, #0f172a);
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -38,7 +67,7 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 50%;
   background: #06b6d4;
   cursor: pointer;
-  border: 2px solid #0f172a;
+  border: 2px solid var(--color-slate-950, #0f172a);
 }
 
 /* Leaflet overrides */
@@ -48,11 +77,45 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .leaflet-tooltip {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-family, sans-serif;
   border-radius: 8px !important;
   padding: 6px 10px !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
   border: 1px solid #e2e8f0 !important;
   background: white !important;
   color: #1e293b !important;
+}
+
+/* Light theme: additional overrides for elements using opacity-based colors */
+.light .bg-slate-800\/50 {
+  background-color: rgba(241, 245, 249, 0.5) !important;
+}
+
+.light .bg-slate-800\/30 {
+  background-color: rgba(241, 245, 249, 0.3) !important;
+}
+
+.light .bg-slate-800\/20 {
+  background-color: rgba(241, 245, 249, 0.2) !important;
+}
+
+.light .bg-slate-700\/50 {
+  background-color: rgba(226, 232, 240, 0.5) !important;
+}
+
+/* Light theme: select/input styling */
+.light select,
+.light input[type="text"],
+.light input[type="search"] {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+}
+
+/* Smooth transitions */
+.light *,
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
 }

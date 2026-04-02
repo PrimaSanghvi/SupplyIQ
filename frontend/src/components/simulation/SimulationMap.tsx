@@ -2,6 +2,7 @@ import { useMemo, useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Polyline, Tooltip, useMap } from 'react-leaflet';
+import { useTheme } from '../../contexts/ThemeContext';
 import type { Rebalance } from '../../pages/SimulationPage';
 
 interface DCDayState {
@@ -107,6 +108,11 @@ function FitBounds({ dcStates }: { dcStates: DCDayState[] }) {
 }
 
 export default function SimulationMap({ dcStates, rebalances, day }: Props) {
+  const { theme } = useTheme();
+  const tileUrl = theme === 'light'
+    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
   const dcMap = useMemo(() => {
     const m: Record<string, DCDayState> = {};
     dcStates.forEach((dc) => { m[dc.id] = dc; });
@@ -155,12 +161,13 @@ export default function SimulationMap({ dcStates, rebalances, day }: Props) {
       <MapContainer
         center={[39.0, -98.0]}
         zoom={4}
-        style={{ height: '100%', width: '100%', background: '#0f172a' }}
+        style={{ height: '100%', width: '100%', background: theme === 'light' ? '#f8fafc' : '#0f172a' }}
         zoomControl={false}
         scrollWheelZoom={true}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          key={theme}
+          url={tileUrl}
           attribution='&copy; <a href="https://carto.com">CARTO</a>'
         />
         <FitBounds dcStates={dcStates} />

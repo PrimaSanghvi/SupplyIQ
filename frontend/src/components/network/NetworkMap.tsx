@@ -3,6 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Polyline, Tooltip, useMap } from 'react-leaflet';
 import type { DC, Lane } from '../../types/network';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface Props {
   dcs: DC[];
@@ -100,6 +101,11 @@ function FitBounds({ dcs }: { dcs: DC[] }) {
 }
 
 export default function NetworkMap({ dcs, lanes }: Props) {
+  const { theme } = useTheme();
+  const tileUrl = theme === 'light'
+    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
   const dcMap = useMemo(() => Object.fromEntries(dcs.map((dc) => [dc.id, dc])), [dcs]);
 
   // Deduplicate lanes and generate arcs
@@ -170,11 +176,12 @@ export default function NetworkMap({ dcs, lanes }: Props) {
         zoom={4}
         scrollWheelZoom={true}
         zoomControl={true}
-        style={{ height: '100%', width: '100%', background: '#f8fafc' }}
+        style={{ height: '100%', width: '100%', background: theme === 'light' ? '#f8fafc' : '#0f172a' }}
       >
         <TileLayer
+          key={theme}
           attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          url={tileUrl}
         />
 
         <FitBounds dcs={dcs} />
