@@ -11,7 +11,7 @@ const BRAND_MAP: Record<string, BrandConfig> = {
   'supplymind-iq.vercel.app': {
     name: 'SupplyMind AI',
     subtitle: 'Optimization Engine',
-    color: '#ffffff',
+    color: 'inherit',
     logo: 'zap',
   },
   // Persistent
@@ -35,7 +35,7 @@ const BRAND_MAP: Record<string, BrandConfig> = {
 const DEFAULT_BRAND: BrandConfig = {
   name: 'SupplyMind AI',
   subtitle: 'Optimization Engine',
-  color: '#ffffff',
+  color: 'inherit',
   logo: 'zap',
 };
 

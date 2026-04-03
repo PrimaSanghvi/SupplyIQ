@@ -48,6 +48,89 @@ const SCENARIO_NAMES: Record<string, string> = {
   overstock: 'Overstock',
 };
 
+// Generate contextual follow-up questions based on the last exchange
+function getFollowUps(userQuestion: string, scenarioId: string): string[] {
+  const q = userQuestion.toLowerCase();
+
+  // Scenario-specific follow-ups
+  if (scenarioId === 'early_bird') {
+    if (q.includes('ship') || q.includes('early') || q.includes('wait')) {
+      return [
+        "How much would we lose if freight rates spike before we ship?",
+        "What's the holding cost of shipping early to Chicago?",
+        "Are there alternative lanes that avoid the rate spike?",
+      ];
+    }
+    return [
+      "Why are freight rates about to spike on the ATL→CHI lane?",
+      "What's the cost difference between shipping now vs. waiting?",
+      "How does the labor strike affect other lanes?",
+    ];
+  }
+
+  if (scenarioId === 'long_haul') {
+    if (q.includes('dallas') || q.includes('los angeles') || q.includes('lax') || q.includes('far')) {
+      return [
+        "What happens to the Tier-1 customer if we pull from LA?",
+        "How much extra does the Dallas route cost vs. LA?",
+        "Are there other DCs that could supply Seattle?",
+      ];
+    }
+    return [
+      "Why is LA's stock reserved and can't be used?",
+      "What's the revenue risk of missing the Tier-1 order?",
+      "How many days until Seattle runs out of stock?",
+    ];
+  }
+
+  if (scenarioId === 'overstock') {
+    if (q.includes('capacity') || q.includes('full') || q.includes('overflow')) {
+      return [
+        "What's the overflow storage cost vs. lost sales during the promo?",
+        "How long will Chicago stay above 100% capacity?",
+        "Can we redirect some promo demand to nearby DCs?",
+      ];
+    }
+    return [
+      "How big is the demand spike from the regional promotion?",
+      "What happens if Chicago stocks out during the promo?",
+      "Which DCs are sending stock to Chicago?",
+    ];
+  }
+
+  // Generic follow-ups based on question content
+  if (q.includes('cost') || q.includes('save') || q.includes('expensive')) {
+    return [
+      "What's the biggest cost driver in the current plan?",
+      "How would changing the cost weight affect transfers?",
+      "Which lane has the highest cost per unit?",
+    ];
+  }
+
+  if (q.includes('carbon') || q.includes('co2') || q.includes('emission') || q.includes('green')) {
+    return [
+      "Which transfers have the highest carbon footprint?",
+      "What's the cost of reducing emissions by 20%?",
+      "How does rail compare to truck on carbon impact?",
+    ];
+  }
+
+  if (q.includes('risk') || q.includes('stockout') || q.includes('shortage')) {
+    return [
+      "Which DCs are most at risk of stockout?",
+      "How many days of supply does each DC have?",
+      "What's the stockout penalty if we don't act?",
+    ];
+  }
+
+  // Default follow-ups
+  return [
+    "What are the key trade-offs in this optimization?",
+    "Which DC is most at risk right now?",
+    "How would a different weight strategy change the plan?",
+  ];
+}
+
 export default function ChatPage() {
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
@@ -314,31 +397,52 @@ export default function ChatPage() {
             </div>
           )}
 
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
-              {msg.role === 'assistant' && (
-                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Bot size={16} className="text-cyan-400" />
-                </div>
-              )}
-              <div className={`rounded-xl px-4 py-3 text-sm leading-relaxed ${
-                msg.role === 'user'
-                  ? 'bg-cyan-500/20 text-white max-w-[75%]'
-                  : 'bg-slate-800 text-slate-200 w-full'
-              }`}>
-                {msg.content.split('\n').map((line, li) => (
-                  <div key={li} className={li > 0 && !line.startsWith('- ') ? 'mt-2' : ''}>
-                    {renderMarkdownLine(line)}
+          {messages.map((msg, i) => {
+            // Show follow-ups after the last assistant message (when not loading)
+            const isLastAssistant = msg.role === 'assistant' && i === messages.length - 1 && !loading;
+            const lastUserMsg = isLastAssistant ? messages.slice(0, i).reverse().find((m) => m.role === 'user') : null;
+
+            return (
+              <div key={i}>
+                <div className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                  {msg.role === 'assistant' && (
+                    <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Bot size={16} className="text-cyan-400" />
+                    </div>
+                  )}
+                  <div className={`rounded-xl px-4 py-3 text-sm leading-relaxed ${
+                    msg.role === 'user'
+                      ? 'bg-cyan-500/20 text-white max-w-[75%]'
+                      : 'bg-slate-800 text-slate-200 w-full'
+                  }`}>
+                    {msg.content.split('\n').map((line, li) => (
+                      <div key={li} className={li > 0 && !line.startsWith('- ') ? 'mt-2' : ''}>
+                        {renderMarkdownLine(line)}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              {msg.role === 'user' && (
-                <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <User size={16} className="text-slate-300" />
+                  {msg.role === 'user' && (
+                    <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <User size={16} className="text-slate-300" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+                {isLastAssistant && lastUserMsg && (
+                  <div className="ml-11 mt-2 flex flex-wrap gap-1.5">
+                    {getFollowUps(lastUserMsg.content, scenarioId).map((fq, fi) => (
+                      <button
+                        key={fi}
+                        onClick={() => handleSend(fq)}
+                        className="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 px-2.5 py-1.5 rounded-lg transition-colors text-left border border-slate-700 hover:border-slate-600"
+                      >
+                        {fq}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
           {loading && (
             <div className="flex gap-3">
