@@ -22,8 +22,22 @@ const BRAND_MAP: Record<string, BrandConfig> = {
     logo: 'image',
     logoSrc: '/logos/persistent.png',
   },
+  'supply-iq-persistent.cogniify.ai': {
+    name: 'PERSISTENT',
+    subtitle: 'SupplyMind AI',
+    color: '#ee7d2f',
+    logo: 'image',
+    logoSrc: '/logos/persistent.png',
+  },
   // Cogniify
   'supply-iq-cogniify.vercel.app': {
+    name: 'COGNIIFY',
+    subtitle: 'SupplyMind AI',
+    color: '#4f46e5',
+    logo: 'image',
+    logoSrc: '/logos/cogniify.png',
+  },
+  'supply-iq.cogniify.ai': {
     name: 'COGNIIFY',
     subtitle: 'SupplyMind AI',
     color: '#4f46e5',

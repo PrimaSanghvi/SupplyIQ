@@ -37,8 +37,8 @@ export default function Sidebar({ activePage, onNavigate }: SidebarProps) {
           </div>
         )}
         <div className="flex flex-col">
-          <span className={`text-sm font-bold tracking-tight leading-none ${brand.color === 'inherit' ? 'text-white' : ''}`} style={brand.color !== 'inherit' ? { color: brand.color } : undefined}>{brand.name}</span>
-          <span className="text-[9px] text-slate-500 font-semibold tracking-wider mt-0.5 uppercase">{brand.subtitle}</span>
+          <span className={`text-base font-bold tracking-tight leading-none ${brand.color === 'inherit' ? 'text-white' : ''}`} style={brand.color !== 'inherit' ? { color: brand.color } : undefined}>{brand.name}</span>
+          <span className="text-[10px] text-slate-500 font-semibold tracking-wider mt-1 uppercase">{brand.subtitle}</span>
         </div>
       </div>
       <nav className="flex flex-col gap-1">
